@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<flow name="errorFlow" doc:id="6b16443c-a988-4585-a981-2d75e2260186" >
+		<http:listener doc:name="Listener" doc:id="0c79f716-b724-4dd4-b74f-0a98e3c137bc" config-ref="HTTP_Config_global" path="/demo"/>
+		<ee:transform doc:name="Transform Message" doc:id="62a90add-e863-4813-82a5-c4debd510046" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[
+	1,2,"Bene", 3, "Santos"
+]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="demoBatch_Job" doc:id="5674f5f3-2707-4daa-b32c-89ae1742fcc6" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="5c59a57d-b1b4-4ad4-b74a-ea3dabff86f7" />
+			</batch:process-records>
+		</batch:job>
+	</flow>
+</mule>

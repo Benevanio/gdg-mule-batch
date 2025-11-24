@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="GET:gdg" doc:id="88c0b9fd-6f56-40f6-b8df-97e900492163" >
+		<http:listener doc:name="Listener" doc:id="d8365873-5536-4a74-91bb-dc19ed53c190" config-ref="HTTP_Config_global" path="/gdg"/>
+		<set-payload value="#[1 to 100]" doc:name="1 to 100" doc:id="920d13e3-b9fb-417d-9f4a-1461b7144ec4" />
+		<batch:job jobName="GDG_FLOW" doc:id="df57508a-28c1-4f9f-8f49-907079d63a45" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="56f79228-37a3-4457-9dc9-5dc9fad5fc5f" >
+					<set-payload value="#[payload * 10]" doc:name="Set Payload" doc:id="def33e40-2138-4079-8e27-582b7a80abb2" />
+					<logger level="INFO" doc:name="Step" doc:id="d3812dff-650f-465b-88a2-2274447b77ff" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload batch Step": payload&#10;}]'/>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="bcbe83f1-0efa-4f09-991c-e25c118e669b" size="2">
+						<logger level="INFO" doc:name="aggregator" doc:id="da96c548-c677-4110-9107-5b4ae82a67f5" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Aggregator": payload&#10;}]'/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="On complete" doc:id="09d74a7a-94ea-4ede-894b-47eb40a30680" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Final": payload&#10;}]'/>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>
