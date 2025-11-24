@@ -20,8 +20,37 @@ output application/json
 		</ee:transform>
 		<batch:job jobName="demoBatch_Job" doc:id="5674f5f3-2707-4daa-b32c-89ae1742fcc6" >
 			<batch:process-records >
-				<batch:step name="Batch_Step" doc:id="5c59a57d-b1b4-4ad4-b74a-ea3dabff86f7" />
+				<batch:step name="Batch_Step" doc:id="5c59a57d-b1b4-4ad4-b74a-ea3dabff86f7" >
+					<logger level="INFO" doc:name="Logger" doc:id="60c5904c-a581-4d59-9382-7936c205d85c" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Batch Step": payload&#10;}]'/>
+					<ee:transform doc:name="Transform Message" doc:id="7bbefa07-5be3-4116-8b6f-e8bb59c3e5c0" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Mult": payload * 10
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="2b55ba61-63ce-4f70-b807-68e3f04fefba" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Batch Step Mult": payload&#10;}]'/>
+				</batch:step>
+				<batch:step name="Batch_Step1" doc:id="6c579f79-96fd-4f82-a236-84b23de507c5" acceptPolicy="ONLY_FAILURES">
+					<logger level="INFO" doc:name="Logger" doc:id="64c9144d-8618-4185-848f-c576faabd1b3" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Batch Step2": payload&#10;}]' />
+				</batch:step>
 			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="068cdfce-7f89-4c9e-a9b4-b2ac4d424ab3" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	"Payload Batch On Complete": payload&#10;}]'/>
+				<ee:transform doc:name="Transform Message" doc:id="a23adfd0-fc57-4c2a-b068-0b4796482788" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Payload on complete": payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</batch:on-complete>
 		</batch:job>
 	</flow>
 </mule>
